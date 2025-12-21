@@ -1,0 +1,21 @@
+var x = 10;
+var y = 20;
+var z = 0;
+
+x = x + y * 2;
+
+if (x > y) {
+    z = 1;
+} else {
+    z = 0;
+}
+
+var i = 0;
+while (i < 5) {
+    i = i + 1;
+}
+
+{
+    var block_var = x + y;
+    z = block_var;
+}
