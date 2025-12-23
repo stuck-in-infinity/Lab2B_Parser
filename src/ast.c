@@ -3,91 +3,83 @@
 #include <string.h>
 #include "ast.h"
 
+ASTNode *make_node(NodeType type)
+{
+  ASTNode *n = calloc(1, sizeof(ASTNode));
+  n->type = type;
+  return n;
+}
+
+ASTNode *make_number(int v)
+{
+  ASTNode *n = make_node(NODE_NUMBER);
+  n->value = v;
+  return n;
+}
+
+ASTNode *make_ident(char *s)
+{
+  ASTNode *n = make_node(NODE_IDENT);
+  n->name = strdup(s);
+  return n;
+}
+
+ASTNode *make_binop(char *op, ASTNode *l, ASTNode *r)
+{
+  ASTNode *n = make_node(NODE_BINOP);
+  n->name = strdup(op);
+  n->left = l;
+  n->right = r;
+  return n;
+}
+
 static void indent(int n)
 {
   for (int i = 0; i < n; i++)
     printf("  ");
 }
 
-ASTNode *make_var_decl(char *name, ASTNode *value)
+void print_ast(ASTNode *n, int d)
 {
-  ASTNode *n = malloc(sizeof(ASTNode));
-  n->type = NODE_VAR_DECL;
-  n->name = strdup(name);
-  n->left = value;
-  n->right = NULL;
-  return n;
-}
-
-ASTNode *make_assign(char *name, ASTNode *value)
-{
-  ASTNode *n = malloc(sizeof(ASTNode));
-  n->type = NODE_ASSIGN;
-  n->name = strdup(name);
-  n->left = value;
-  n->right = NULL;
-  return n;
-}
-
-ASTNode *make_binop(char op, ASTNode *left, ASTNode *right)
-{
-  ASTNode *n = malloc(sizeof(ASTNode));
-  n->type = NODE_BINOP;
-  n->op = op;
-  n->left = left;
-  n->right = right;
-  return n;
-}
-
-ASTNode *make_number(int value)
-{
-  ASTNode *n = malloc(sizeof(ASTNode));
-  n->type = NODE_NUMBER;
-  n->value = value;
-  n->left = n->right = NULL;
-  return n;
-}
-
-ASTNode *make_ident(char *name)
-{
-  ASTNode *n = malloc(sizeof(ASTNode));
-  n->type = NODE_IDENT;
-  n->name = strdup(name);
-  n->left = n->right = NULL;
-  return n;
-}
-
-void print_ast(ASTNode *node, int indent_lvl)
-{
-  if (!node)
+  if (!n)
     return;
 
-  indent(indent_lvl);
-
-  switch (node->type)
+  indent(d);
+  switch (n->type)
   {
+  case NODE_PROGRAM:
+    printf("PROGRAM\n");
+    break;
+  case NODE_BLOCK:
+    printf("BLOCK\n");
+    break;
   case NODE_VAR_DECL:
-    printf("VAR_DECL(%s)\n", node->name);
-    print_ast(node->left, indent_lvl + 1);
+    printf("VAR_DECL(%s)\n", n->name);
     break;
-
   case NODE_ASSIGN:
-    printf("ASSIGN(%s)\n", node->name);
-    print_ast(node->left, indent_lvl + 1);
+    printf("ASSIGN(%s)\n", n->name);
     break;
-
+  case NODE_IF:
+    printf("IF\n");
+    break;
+  case NODE_WHILE:
+    printf("WHILE\n");
+    break;
   case NODE_BINOP:
-    printf("BINOP(%c)\n", node->op);
-    print_ast(node->left, indent_lvl + 1);
-    print_ast(node->right, indent_lvl + 1);
+    printf("BINOP(%s)\n", n->name);
     break;
-
   case NODE_NUMBER:
-    printf("NUMBER(%d)\n", node->value);
+    printf("NUMBER(%d)\n", n->value);
     break;
-
   case NODE_IDENT:
-    printf("IDENT(%s)\n", node->name);
+    printf("IDENT(%s)\n", n->name);
     break;
   }
+
+  print_ast(n->cond, d + 1);
+  print_ast(n->left, d + 1);
+  print_ast(n->right, d + 1);
+  print_ast(n->body, d + 1);
+  print_ast(n->else_body, d + 1);
+  print_ast(n->next, d);
 }
