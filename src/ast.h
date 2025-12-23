@@ -3,8 +3,12 @@
 
 typedef enum
 {
+  NODE_PROGRAM,
+  NODE_BLOCK,
   NODE_VAR_DECL,
   NODE_ASSIGN,
+  NODE_IF,
+  NODE_WHILE,
   NODE_BINOP,
   NODE_NUMBER,
   NODE_IDENT
@@ -13,21 +17,20 @@ typedef enum
 typedef struct ASTNode
 {
   NodeType type;
-  char *name; // variable name
-  int value;  // for numbers
-  char op;    // operator
+  char *name; // variable / operator
+  int value;  // numbers
   struct ASTNode *left;
   struct ASTNode *right;
+  struct ASTNode *cond;
+  struct ASTNode *body;
+  struct ASTNode *else_body;
+  struct ASTNode *next; // for statement lists
 } ASTNode;
 
-/* Constructors */
-ASTNode *make_var_decl(char *name, ASTNode *value);
-ASTNode *make_assign(char *name, ASTNode *value);
-ASTNode *make_binop(char op, ASTNode *left, ASTNode *right);
-ASTNode *make_number(int value);
-ASTNode *make_ident(char *name);
-
-/* Print */
+ASTNode *make_node(NodeType type);
+ASTNode *make_number(int v);
+ASTNode *make_ident(char *s);
+ASTNode *make_binop(char *op, ASTNode *l, ASTNode *r);
 void print_ast(ASTNode *node, int indent);
 
 #endif
