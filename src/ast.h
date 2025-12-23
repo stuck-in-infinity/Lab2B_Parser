@@ -13,19 +13,21 @@ typedef enum
 typedef struct ASTNode
 {
   NodeType type;
-  char *name;
-  int value;
-  char op;
+  char *name; // variable name
+  int value;  // for numbers
+  char op;    // operator
   struct ASTNode *left;
   struct ASTNode *right;
 } ASTNode;
 
-ASTNode *create_var_decl(char *name, ASTNode *value);
-ASTNode *create_assign(char *name, ASTNode *value);
-ASTNode *create_binop(char op, ASTNode *left, ASTNode *right);
-ASTNode *create_number(int value);
-ASTNode *create_ident(char *name);
+/* Constructors */
+ASTNode *make_var_decl(char *name, ASTNode *value);
+ASTNode *make_assign(char *name, ASTNode *value);
+ASTNode *make_binop(char op, ASTNode *left, ASTNode *right);
+ASTNode *make_number(int value);
+ASTNode *make_ident(char *name);
 
+/* Print */
 void print_ast(ASTNode *node, int indent);
 
 #endif
